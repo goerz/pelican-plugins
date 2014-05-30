@@ -294,11 +294,26 @@ def notebook(preprocessor, tag, markup):
                             filters={'highlight2html': custom_highlighter},
                             **subcell_kwarg)
 
+    preamble = "\n".join((
+            '<p>',
+             '<a href="%s", title="Download Notebook" download="">' % (
+                 settings.get('SITEURL') + os.path.join('/', nb_dir, src),
+             ),
+             '<span class="fa fa-download fa-3"></span>',
+             '&nbsp;Download&nbsp;Notebook',
+             '</a>',
+            '</p>',
+            '',
+            '<hr/>'
+            '')
+    )
+
     # read and parse the notebook
     with open(nb_path) as f:
         nb_text = f.read()
     nb_json = nbformat.reads_json(nb_text)
     (body, resources) = exporter.from_notebook_node(nb_json)
+    body = preamble + body
 
     # if we haven't already saved the header, save it here.
     if write_nb_header:
