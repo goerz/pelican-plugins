@@ -43,6 +43,12 @@ and in your ``pelicanconf.py`` file, include the line:
 this will insert the appropriate CSS.  All efforts have been made to ensure
 that this CSS will not override formats within the blog theme, but there may
 still be some conflicts.
+
+You may disable writing ``_nb_header.html`` by setting
+
+    WRITE_NB_HEADER = False
+
+in ``pelicanconf.py``
 """
 import re
 import os
@@ -259,6 +265,7 @@ def notebook(preprocessor, tag, markup):
     settings = preprocessor.configs.config['settings']
     nb_dir =  settings.get('NOTEBOOK_DIR', 'notebooks')
     nb_path = os.path.join('content', nb_dir, src)
+    write_nb_header =  settings.get('WRITE_NB_HEADER', True)
 
     if not os.path.exists(nb_path):
         raise ValueError("File {0} could not be found".format(nb_path))
@@ -294,16 +301,17 @@ def notebook(preprocessor, tag, markup):
     (body, resources) = exporter.from_notebook_node(nb_json)
 
     # if we haven't already saved the header, save it here.
-    if not notebook.header_saved:
-        print ("\n ** Writing styles to _nb_header.html: "
-               "this should be included in the theme. **\n")
+    if write_nb_header:
+        if not notebook.header_saved:
+            print ("\n ** Writing styles to _nb_header.html: "
+                "this should be included in the theme. **\n")
 
-        header = '\n'.join(CSS_WRAPPER.format(css_line)
-                           for css_line in resources['inlining']['css'])
-        header += JS_INCLUDE
+            header = '\n'.join(CSS_WRAPPER.format(css_line)
+                            for css_line in resources['inlining']['css'])
+            header += JS_INCLUDE
 
-        with open('_nb_header.html', 'w') as f:
-            f.write(header)
+            with open('_nb_header.html', 'w') as f:
+                f.write(header)
         notebook.header_saved = True
 
     # this will stash special characters so that they won't be transformed
