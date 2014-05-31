@@ -15,6 +15,7 @@ Name                                           | Type      | Default            
 `PELICAN_COMMENT_SYSTEM_IDENTICON_OUTPUT_PATH` | `string`  | `images/identicon`         | Relative URL to the output folder where the identicons are stored
 `PELICAN_COMMENT_SYSTEM_IDENTICON_DATA`        | `tuple`   | `()`                       | Contains all Metadata tags, which in combination identifies a comment author (like `('author', 'email')`)
 `PELICAN_COMMENT_SYSTEM_IDENTICON_SIZE`        | `int`     | `72`                       | Width and height of the identicons. Has to be a multiple of 3.
+`PELICAN_COMMENT_SYSTEM_USE_GRAVATAR`          | `boolean` | `False`                    | Activate use of Gravatar service to obtain avatars
 `PELICAN_COMMENT_SYSTEM_AUTHORS`               | `dict`    | `{}`                       | Comment authors, which should have a specific avatar. More info [here](avatars.md)
 `PELICAN_COMMENT_SYSTEM_FEED`                  | `string`  |`feeds/comment.%s.atom.xml` | Relative URL to output the Atom feed for each article.`%s` gets replaced with the slug of the article. More info [here](http://docs.getpelican.com/en/latest/settings.html#feed-settings)
 `COMMENT_URL`                                  | `string`  | `#comment-{path}`          | `{path}` gets replaced with the id of the comment. More info [here](feed.md)

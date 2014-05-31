@@ -25,6 +25,8 @@ Bernhard Scheirle  | <http://blog.scheirle.de> | <https://github.com/Scheirle>
 ## Requirements
 To create identicons the Python Image Library is needed. Therefore you either need PIL **or** Pillow (recommended).
 
+Alternatively, you can also create identicons using the online Gravatar service.
+
 ##### Install Pillow
 	easy_install Pillow
 	

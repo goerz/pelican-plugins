@@ -33,6 +33,7 @@ def pelican_initialized(pelican):
 	DEFAULT_CONFIG.setdefault('PELICAN_COMMENT_SYSTEM_AUTHORS', {})
 	DEFAULT_CONFIG.setdefault('PELICAN_COMMENT_SYSTEM_FEED', os.path.join('feeds', 'comment.%s.atom.xml'))
 	DEFAULT_CONFIG.setdefault('COMMENT_URL', '#comment-{path}')
+	DEFAULT_CONFIG.setdefault('PELICAN_COMMENT_SYSTEM_USE_GRAVATAR', False)
 	if pelican:
 		pelican.settings.setdefault('PELICAN_COMMENT_SYSTEM', False)
 		pelican.settings.setdefault('PELICAN_COMMENT_SYSTEM_DIR', 'comments')
@@ -42,6 +43,7 @@ def pelican_initialized(pelican):
 		pelican.settings.setdefault('PELICAN_COMMENT_SYSTEM_AUTHORS', {})
 		pelican.settings.setdefault('PELICAN_COMMENT_SYSTEM_FEED', os.path.join('feeds', 'comment.%s.atom.xml'))
 		pelican.settings.setdefault('COMMENT_URL', '#comment-{path}')
+		pelican.settings.setdefault('PELICAN_COMMENT_SYSTEM_USE_GRAVATAR', False)
 
 
 def initialize(article_generator):
@@ -112,7 +114,8 @@ def add_static_comments(gen, content):
 	content.comments = comments
 
 def writeIdenticonsToDisk(gen, writer):
-	avatars.generateAndSaveMissingAvatars()
+	use_gravatar = gen.settings['PELICAN_COMMENT_SYSTEM_USE_GRAVATAR']
+	avatars.generateAndSaveMissingAvatars(use_gravatar)
 
 def register():
 	signals.initialized.connect(pelican_initialized)
