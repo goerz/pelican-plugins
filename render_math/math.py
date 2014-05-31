@@ -285,7 +285,12 @@ def process_content(instance):
 
         # Exact copy of the logic as found in the default reader
         instance._content = _TYPOGRIFY(instance._content, ignore_tags)
-        instance.metadata['title'] = _TYPOGRIFY(instance.metadata['title'], ignore_tags)
+        try:
+            instance.metadata['title'] \
+            = _TYPOGRIFY(instance.metadata['title'], ignore_tags)
+        except KeyError:
+            # Not all content has a title
+            pass
 
     if math:
         if _MATHJAX_SETTINGS['auto_insert']:
