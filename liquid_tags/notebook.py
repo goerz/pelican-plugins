@@ -95,6 +95,7 @@ from jinja2 import DictLoader
 #  specifically designed to make the results look good within the
 #  pelican-octopress theme.
 JS_INCLUDE = r"""
+<!-- start liquid_tags/notebook header -->
 <style type="text/css">
 /* Overrides of notebook CSS for static HTML export */
 div.entry-content {
@@ -183,7 +184,7 @@ jQuery(document).ready(function($) {
 });
 });
 </script>
-
+<!-- end liquid_tags/notebook header -->
 """
 
 CSS_WRAPPER = """
@@ -293,7 +294,7 @@ def notebook(preprocessor, tag, markup):
         subcell_kwarg = dict(preprocessors=[SubCell])
     else:
         subcell_kwarg = dict(transformers=[SubCell])
-    
+
     exporter = HTMLExporter(config=c,
                             template_file=template_file,
                             filters={'highlight2html': language_applied_highlighter},

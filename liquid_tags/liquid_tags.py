@@ -8,8 +8,9 @@ def addLiquidTags(gen):
         gen.settings['MD_EXTENSIONS'] = DEFAULT_CONFIG['MD_EXTENSIONS']
 
     if LiquidTags not in gen.settings['MD_EXTENSIONS']:
-        configs = dict(settings=gen.settings)
-        gen.settings['MD_EXTENSIONS'].append(LiquidTags(configs))
+        ext = LiquidTags()
+        ext.config['settings'] = gen.settings
+        gen.settings['MD_EXTENSIONS'].append(ext)
 
 
 def register():
