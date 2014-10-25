@@ -50,6 +50,7 @@ def process_settings(pelicanobj):
     mathjax_settings['process_escapes'] = 'true'  # controls whether escapes are processed
     mathjax_settings['latex_preview'] = 'TeX'  # controls what user sees while waiting for LaTex to render
     mathjax_settings['color'] = 'black'  # controls color math is rendered in
+    mathjax_settings['macros'] = ''  # extra macros
 
     # Source for MathJax: Works boths for http and https (see http://docs.mathjax.org/en/latest/start.html#secure-access-to-the-cdn)
     mathjax_settings['source'] = "'//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'"
@@ -68,7 +69,7 @@ def process_settings(pelicanobj):
     for key, value in ((key, settings[key]) for key in settings):
         # Iterate over dictionary in a way that is compatible with both version 2
         # and 3 of python
-        if key == 'align' and isinstance(value, basestring):
+        if key == 'align':
             if value == 'left' or value == 'right' or value == 'center':
                 mathjax_settings[key] = value
             else:
@@ -83,11 +84,16 @@ def process_settings(pelicanobj):
         if key == 'process_escapes' and isinstance(value, bool):
             mathjax_settings[key] = 'true' if value else 'false'
 
-        if key == 'latex_preview' and isinstance(value, basestring):
+        if key == 'latex_preview':
             mathjax_settings[key] = value
 
-        if key == 'color' and isinstance(value, basestring):
+        if key == 'color':
             mathjax_settings[key] = value
+
+        if key == 'macros':
+            mathjax_settings[key] = " ".join(value.split("\n"))
+            mathjax_settings[key] = mathjax_settings[key].replace('\\', '\\\\')
+            mathjax_settings[key] = mathjax_settings[key].replace('"', '\\"')
 
     return mathjax_settings
 
