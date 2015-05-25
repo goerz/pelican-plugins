@@ -56,12 +56,11 @@ from functools import partial
 
 from .mdx_liquid_tags import LiquidTags
 
-from distutils.version import LooseVersion
 import IPython
-if not LooseVersion(IPython.__version__) >= '1.0':
-    raise ValueError("IPython version 1.0+ required for notebook tag")
+IPYTHON_VERSION = IPython.version_info[0]
 
-from IPython import nbconvert
+if not IPYTHON_VERSION >= 1:
+    raise ValueError("IPython version 1.0+ required for notebook tag")
 
 try:
     from IPython.nbconvert.filters.highlight import _pygments_highlight
@@ -74,8 +73,6 @@ from pygments.formatters import HtmlFormatter
 from IPython.nbconvert.exporters import HTMLExporter
 from IPython.config import Config
 
-from IPython.nbformat import current as nbformat
-
 try:
     from IPython.nbconvert.preprocessors import Preprocessor
 except ImportError:
@@ -84,9 +81,6 @@ except ImportError:
 
 from IPython.utils.traitlets import Integer
 from copy import deepcopy
-
-from jinja2 import DictLoader
-
 
 #----------------------------------------------------------------------
 # Some code that will be added to the header:
@@ -216,9 +210,13 @@ class SubCell(Preprocessor):
 
     def preprocess(self, nb, resources):
         nbc = deepcopy(nb)
-        for worksheet in nbc.worksheets:
-            cells = worksheet.cells[:]
-            worksheet.cells = cells[self.start:self.end]
+        if IPYTHON_VERSION < 3:
+            for worksheet in nbc.worksheets:
+                cells = worksheet.cells[:]
+                worksheet.cells = cells[self.start:self.end]
+        else:
+            nbc.cells = nbc.cells[self.start:self.end]
+        
         return nbc, resources
 
     call = preprocess # IPython < 2.0
@@ -268,8 +266,7 @@ def notebook(preprocessor, tag, markup):
 
     language_applied_highlighter = partial(custom_highlighter, language=language)
 
-    settings = preprocessor.configs.config['settings']
-    nb_dir =  settings.get('NOTEBOOK_DIR', 'notebooks')
+    nb_dir =  preprocessor.configs.getConfig('NOTEBOOK_DIR')
     nb_path = os.path.join('content', nb_dir, src)
     write_nb_header =  settings.get('WRITE_NB_HEADER', True)
 
@@ -283,14 +280,17 @@ def notebook(preprocessor, tag, markup):
                     {'enabled':True, 'start':start, 'end':end}})
 
     template_file = 'basic'
-    if LooseVersion(IPython.__version__) >= '2.0':
+    if IPYTHON_VERSION >= 3:
+        if os.path.exists('pelicanhtml_3.tpl'):
+            template_file = 'pelicanhtml_3'
+    elif IPYTHON_VERSION == 2:
         if os.path.exists('pelicanhtml_2.tpl'):
             template_file = 'pelicanhtml_2'
     else:
         if os.path.exists('pelicanhtml_1.tpl'):
             template_file = 'pelicanhtml_1'
 
-    if LooseVersion(IPython.__version__) >= '2.0':
+    if IPYTHON_VERSION >= 2:
         subcell_kwarg = dict(preprocessors=[SubCell])
     else:
         subcell_kwarg = dict(transformers=[SubCell])
@@ -317,7 +317,11 @@ def notebook(preprocessor, tag, markup):
     # read and parse the notebook
     with open(nb_path) as f:
         nb_text = f.read()
-    nb_json = nbformat.reads_json(nb_text)
+        if IPYTHON_VERSION < 3:
+            nb_json = IPython.nbformat.current.reads_json(nb_text)
+        else:
+            nb_json = IPython.nbformat.reads(nb_text, as_version=4)
+
     (body, resources) = exporter.from_notebook_node(nb_json)
     body = preamble + body
 

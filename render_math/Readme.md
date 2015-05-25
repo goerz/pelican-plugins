@@ -20,6 +20,11 @@ Then add the following to settings.py:
 Your site is now capable of rendering math math using the mathjax JavaScript
 engine. No alterations to the template is needed, just use and enjoy!
 
+However, if you wish, you can set the `auto_insert` setting to `False` which
+will disable the mathjax script from being automatically inserted into the
+content. You would only want to do this if you had control over the template
+and wanted to insert the script manually.
+
 ### Typogrify
 In the past, using [Typgogrify](https://github.com/mintchaos/typogrify) would alter the math contents resulting
 in math that could not be rendered by MathJax. The only option was to ensure
@@ -42,23 +47,46 @@ settings file.
 
 The dictionary can be set with the following keys:
 
- * `align`: controls how displayed math will be aligned. Can be set to either
-`left`, `right` or `center`. **Default Value**: `center`.
- * `indent`: if `align` not set to `center`, then this controls the indent
-level. **Default Value**: `0em`.
- * `show_menu`: a boolean value that controls whether the mathjax contextual 
-menu is shown. **Default Value**: True
- * `process_escapes`: a boolean value that controls whether mathjax processes escape 
-sequences. **Default Value**: True
- * `latex_preview`: controls the preview message users are seen while mathjax is
-rendering LaTex. If set to `Tex`, then the TeX code is used as the preview 
-(which will be visible until it is processed by MathJax). **Default Value**: `Tex`
- * `color`: controls the color of the mathjax rendered font. **Default Value**: `black`
+ * `align`: [string] controls how displayed math will be aligned. Can be set to either
+`'left'`, `'right'` or `'center'`. **Default Value**: `'center'`.
+ * `auto_insert`: [boolean] will insert the mathjax script into content that it is
+detected to have math in it. Setting it to false is not recommended.
+**Default Value**: `True`
+ * `indent`: [string] if `align` not set to `'center'`, then this controls the indent
+level. **Default Value**: `'0em'`.
+ * `show_menu`: [boolean] controls whether the mathjax contextual menu is shown.
+**Default Value**: `True`
+ * `process_escapes`: [boolean] controls whether mathjax processes escape sequences.
+**Default Value**: `True`
+ * `mathjax_font`: [string] will force mathjax to use the chosen font. Current choices
+for the font is `sanserif`, `typewriter` or `fraktur`. If this is not set, it will
+use the default font settings. **Default Value**: `default`
+ * `latex_preview`: [string] controls the preview message users are shown while mathjax is
+rendering LaTex. If set to `'Tex'`, then the TeX code is used as the preview 
+(which will be visible until it is processed by MathJax). **Default Value**: `'Tex'`
+ * `color`: [string] controls the color of the mathjax rendered font. **Default Value**: `'inherit'`
+ * `linebreak_automatic`: [boolean] If set, Mathjax will try to *intelligently* break up displayed math
+(Note: It will not work for inline math). This is very useful for a responsive site. It
+is turned off by default due to it potentially being CPU expensive. **Default Value**: `False`
+ * `tex_extensions`: [list] a list of [latex extensions](http://docs.mathjax.org/en/latest/tex.html#tex-and-latex-extensions)
+accepted by mathjax. **Default Value**: `[]` (empty list)
+ * `responsive`: [boolean] tries to make displayed math render responsively. It does by determining if the width
+is less than `responsive_break` (see below) and if so, sets `align` to `left`, `indent` to `0em` and `linebreak_automatic` to `True`.
+**Default Value**: `False` (defaults to `False` for backward compatibility)
+ * `responsive_break`: [integer] a number (in pixels) representing the width breakpoint that is used
+when setting `responsive_align` to `True`. **Default Value**: 768
+ * `process_summary`: [boolean] ensures math will render in summaries and fixes math in that were cut off.
+Requires [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/bs4/doc/) be installed. **Default Value**: `True`
 
-For example, in settings.py, the following would make math render in blue and
-displaymath align to the left:
+#### Settings Examples
+Make math render in blue and displaymath align to the left:
 
     MATH_JAX = {'color':'blue','align':left}
+
+Use the [color](http://docs.mathjax.org/en/latest/tex.html#color) and
+[mhchem](http://docs.mathjax.org/en/latest/tex.html#mhchem) extensions:
+    
+    MATH_JAX = {'tex_extensions': ['color.js','mhchem.js']}
 
 #### Resulting HTML
 Inlined math is wrapped in `span` tags, while displayed math is wrapped in `div` tags.
